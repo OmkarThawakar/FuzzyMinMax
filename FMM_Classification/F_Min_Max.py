@@ -5,13 +5,15 @@
 # #### Reg No : 2015BCS003  __ ____Roll_No : A-08 _____ Batch: A-01 
 # #### Aim : Implement Fuzzy Min Max Neural Network Classifier 
 
-# In[450]:
+# In[12]:
 
 
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 
-# In[451]:
+# In[6]:
 
 
 class FuzzyMinMaxNN:
@@ -194,9 +196,46 @@ class FuzzyMinMaxNN:
         print('V : ',self.V)
         print('W : ',self.W)
         
+        
+    def draw_box(self,ax,a,b,color):
+        width = abs(a[0] - b[0])
+        height = abs(a[1] - b[1])
+        ax.add_patch(patches.Rectangle(a, width, height, fill=False,edgecolor=color))
+        
+    def show_hyperbox(self):
+        """
+            plot dataset
+        """
+        fig1 = plt.figure()
+        ax = fig1.add_subplot(111, aspect='equal',alpha=0.7)
 
 
-# In[482]:
+        """
+            plot Hyperboxes
+        """
+        for i in range(len(fuzzy.V)):
+            if fuzzy.hyperbox_class[i]==[1]:
+                self.draw_box(ax,fuzzy.V[i],fuzzy.W[i],color='g')
+            else:
+                self.draw_box(ax,fuzzy.V[i],fuzzy.W[i],color='r')
+
+        for i in range(len(X)):
+            if d[i] == [1]:
+                ax.scatter(X[i][0],X[i][1] , marker='o', c='g')
+            else:
+                ax.scatter(X[i][0],X[i][1] , marker='*', c='r')
+
+        plt.xlabel('Dimension 1')
+        plt.ylabel('Dimension 2')
+        plt.title('Hyperboxes created during training')
+        plt.xlim([0,1])
+        plt.ylim([0,1])
+        #plt.legend(('class 1','class 2'))
+        plt.show()
+        
+
+
+# In[7]:
 
 
 fuzzy = FuzzyMinMaxNN(1,theta=0.3)    
@@ -204,14 +243,14 @@ fuzzy = FuzzyMinMaxNN(1,theta=0.3)
 
 # ## Dataset
 
-# In[483]:
+# In[8]:
 
 
 X = [[0.2,0.2],[0.6,0.6],[0.5,0.5],[0.4,0.3],[0.8,0.1],[0.6,0.2],[0.7,0.6],[0.1,0.7],[0.3,0.9],[0.7,0.7],[0.9,0.9]]
 d = [[1],[2],[1],[2],[1],[1],[2],[2],[2],[1],[1]]
 
 
-# In[485]:
+# In[9]:
 
 
 fuzzy.train(X,d,1)
@@ -219,12 +258,18 @@ fuzzy.train(X,d,1)
 
 # ### Testing of pattern 
 
-# In[486]:
+# In[10]:
 
 
 for x in X:
     fuzzy.predict(x)
     print('='*80)
+
+
+# In[13]:
+
+
+fuzzy.show_hyperbox()
 
 
 # ### Visualization of HyperBoxes
