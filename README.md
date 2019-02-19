@@ -265,3 +265,156 @@ plt.show()
 result
 ![Alt text](https://github.com/OmkarThawakar/FuzzyMinMax/blob/master/GFMM/result.png?raw=true "Hyperboxes")
 
+### Enhanved Fuzzy Min Max Neural Network 
+
+1. Import
+
+```
+from EFMM import FuzzyMinMaxNN
+```
+
+2. Create Network object
+
+```
+fuzzy = FuzzyMinMaxNN(1,theta=0.3)
+```
+
+3. Create Dataset
+Here we are going to use Iris Dataset to train our Enhanced fuzzy min-max pattern classifier.
+```
+data = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data',\
+                   names=['PW','PL','SW','SL','Class'])
+data['Class'] = data['Class'].replace(['Iris-setosa', 'Iris-versicolor','Iris-virginica'], [1,2,3])
+np.random.shuffle(data.values)
+data = data.sample(frac=1) #shuffle dataframe sample
+df = data[['PW','PL','SW','SL']]
+normalized_df=(df-df.min())/(df.max()-df.min())
+#choose 50% training and 50% testing sample
+train,test = normalized_df.values[:75,:4],normalized_df.values[75:,:4] 
+train_labels,test_labels = data['Class'].values[:75],data['Class'].values[75:]
+train_labels,test_labels = train_labels.reshape((-1,1)),test_labels.reshape((-1,1))
+
+train,test = train.tolist(),test.tolist()
+train_labels,test_labels = train_labels.tolist(),test_labels.tolist()
+
+
+```
+4. Train the Network
+```
+fuzzy.train(train,train_labels,1)
+```
+result
+```
+epoch : 1
+======================================================================
+input pattern :  [0.19444444444444448, 0.6666666666666666, 0.06779661016949151, 0.04166666666666667] [1]
+Hyperbox : [0.19444444444444448, 0.6666666666666666, 0.06779661016949151, 0.04166666666666667] , [0.19444444444444448, 0.6666666666666666, 0.06779661016949151, 0.04166666666666667] 
+======================================================================
+input pattern :  [0.7222222222222222, 0.4583333333333333, 0.6610169491525424, 0.5833333333333334] [2]
+Hyperbox : [0.7222222222222222, 0.4583333333333333, 0.6610169491525424, 0.5833333333333334] , [0.7222222222222222, 0.4583333333333333, 0.6610169491525424, 0.5833333333333334] 
+======================================================================
+....
+....
+....
+final hyperbox : 
+V :  [[0.19444444444444448, 0.5833333333333333, 0.07627118644067796, 0.08333333333333333], [0.6762152777777777, 0.3749999999999999,
+....
+....
+0.6101694915254237, 0.5416666666666666], [0.42361111111111116, 0.20833333333333331, 0.652542372881356, 0.7083333333333334] ]
+======================================================================
+```
+
+6. Visualizing Hyperboxes
+Here our dataset has four dimension which unable to visualize. So we plot two dimension separately namely dim 1&2 and dim 3&4.
+```
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def draw_box(ax,a,b,color):
+    width = abs(a[0] - b[0])
+    height = abs(a[1] - b[1])
+    ax.add_patch(patches.Rectangle(a, width, height, fill=False,edgecolor=color))
+
+"""
+    plot dataset
+"""
+fig1 = plt.figure()
+ax = fig1.add_subplot(111, aspect='equal',alpha=0.7)
+
+        
+"""
+    plot Hyperboxes
+"""
+for i in range(len(fuzzy.V)):
+    if fuzzy.hyperbox_class[i]==[1]:
+        draw_box(ax,fuzzy.V[i][:2],fuzzy.W[i][:2],color='g')
+    elif fuzzy.hyperbox_class[i]==[2]:
+        draw_box(ax,fuzzy.V[i][:2],fuzzy.W[i][:2],color='b')
+    else:
+        draw_box(ax,fuzzy.V[i][:2],fuzzy.W[i][:2],color='r')
+    
+for i in range(len(train)):
+    if train_labels[i] == [1]:
+        ax.scatter(train[i][0],train[i][1] , marker='o', c='g')
+    elif train_labels[i] == [2]:
+        ax.scatter(train[i][0],train[i][1] , marker='o', c='b')
+    else:
+        ax.scatter(train[i][0],train[i][1] , marker='o', c='r')
+    
+plt.xlabel('Dimension 1')
+plt.ylabel('Dimension 2')
+plt.title('Hyperboxes created during training')
+plt.xlim([0,1])
+plt.ylim([0,1])
+
+plt.show())
+```
+![Alt text](https://github.com/OmkarThawakar/FuzzyMinMax/blob/master/EFMM/iris_1_2.png?raw=true "Hyperboxes")
+
+```
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+def draw_box(ax,a,b,color):
+    width = abs(a[0] - b[0])
+    height = abs(a[1] - b[1])
+    ax.add_patch(patches.Rectangle(a, width, height, fill=False,edgecolor=color))
+
+"""
+    plot dataset
+"""
+fig1 = plt.figure()
+ax = fig1.add_subplot(111, aspect='equal',alpha=0.7)
+
+        
+"""
+    plot Hyperboxes
+"""
+for i in range(len(fuzzy.V)):
+    if fuzzy.hyperbox_class[i]==[1]:
+        draw_box(ax,fuzzy.V[i][2:],fuzzy.W[i][2:],color='g')
+    elif fuzzy.hyperbox_class[i]==[2]:
+        draw_box(ax,fuzzy.V[i][2:],fuzzy.W[i][2:],color='b')
+    else:
+        draw_box(ax,fuzzy.V[i][2:],fuzzy.W[i][2:],color='r')
+    
+for i in range(len(train)):
+    if train_labels[i] == [1]:
+        ax.scatter(train[i][2],train[i][3] , marker='o', c='g')
+    elif train_labels[i] == [2]:
+        ax.scatter(train[i][2],train[i][3] , marker='o', c='b')
+    else:
+        ax.scatter(train[i][2],train[i][3] , marker='o', c='r')
+    
+plt.xlabel('Dimension 3')
+plt.ylabel('Dimension 4')
+plt.title('Hyperboxes created during training')
+plt.xlim([0,1])
+plt.ylim([0,1])
+
+plt.show()
+
+```
+![Alt text](https://github.com/OmkarThawakar/FuzzyMinMax/blob/master/EFMM/iris_3_4.png?raw=true "Hyperboxes")
+
+
